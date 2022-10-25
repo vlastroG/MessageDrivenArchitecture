@@ -13,6 +13,10 @@ namespace MessageDrivenArchitecture.Models
         /// </summary>
         private readonly List<Table> _tables = new();
 
+        /// <summary>
+        /// Объект для синхронизации списка столов
+        /// </summary>
+        private readonly object _lockTables = new object();
 
         /// <summary>
         /// Конструктор ресторана с заданным количеством столов
@@ -46,10 +50,14 @@ namespace MessageDrivenArchitecture.Models
             }
             Console.WriteLine("Добрый день! Сейчас подберем Вам столик!");
 
-            var table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
-            Console.WriteLine(table is null
-                ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
-                : $"Готово! Ваш столик под номером {table.Id}");
+            lock (_lockTables)
+            {
+                var table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
+                table?.SetState(State.Booked);
+                Console.WriteLine(table is null
+                    ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
+                    : $"Готово! Ваш столик под номером {table.Id}");
+            }
         }
 
         public void BookTableAsync(int countOfPersons)
@@ -62,13 +70,15 @@ namespace MessageDrivenArchitecture.Models
             Console.WriteLine("Добрый день! Сейчас подберем Вам столик!");
             Task.Run(async () =>
             {
-                var table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
-
+                lock (_lockTables)
+                {
+                    var table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
+                    table?.SetState(State.Booked);
+                    Console.WriteLine(table is null
+                        ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
+                        : $"Готово! Ваш столик под номером {table.Id}");
+                }
                 await Task.Delay(3000);
-                table?.SetState(State.Booked);
-                Console.WriteLine(table is null
-                    ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
-                    : $"Готово! Ваш столик под номером {table.Id}");
             });
         }
     }

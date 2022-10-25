@@ -32,6 +32,7 @@ namespace MessageDrivenArchitecture.Models
             if (seatsCount < 1 || seatsCount > 12)
                 throw new ArgumentException($"У стола может быть от 1 до 12 мест, получено: {seatsCount}");
             SeatsCount = seatsCount;
+            State = State.Free;
         }
 
         /// <summary>
