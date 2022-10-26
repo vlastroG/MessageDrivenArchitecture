@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessageDrivenArchitecture.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,16 +49,17 @@ namespace MessageDrivenArchitecture.Models
                 throw new ArgumentException(
                     $"Количество персон должно быть не менее 1 и не более 12. Получено: {countOfPersons}");
             }
-            Console.WriteLine("Добрый день! Сейчас подберем Вам столик!");
+            Notificator.SendMessage("Добрый день! Сейчас подберем Вам столик!");
 
+            Table table = null;
             lock (_lockTables)
             {
-                var table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
+                table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
                 table?.SetState(State.Booked);
-                Console.WriteLine(table is null
-                    ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
-                    : $"Готово! Ваш столик под номером {table.Id}");
             }
+            Notificator.SendMessage(table is null
+                ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
+                : $"Готово! Ваш столик под номером {table.Id}\n");
         }
 
         public void BookTableAsync(int countOfPersons)
@@ -67,18 +69,19 @@ namespace MessageDrivenArchitecture.Models
                 throw new ArgumentException(
                     $"Количество персон должно быть не менее 1 и не более 12. Получено: {countOfPersons}");
             }
-            Console.WriteLine("Добрый день! Сейчас подберем Вам столик!");
+            Notificator.SendMessage("Добрый день! Сейчас подберем Вам столик!");
             Task.Run(async () =>
             {
+                Table table = null;
                 lock (_lockTables)
                 {
-                    var table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
+                    table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
                     table?.SetState(State.Booked);
-                    Console.WriteLine(table is null
-                        ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
-                        : $"Готово! Ваш столик под номером {table.Id}");
                 }
                 await Task.Delay(3000);
+                Notificator.SendMessage(table is null
+                    ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
+                    : $"Готово! Ваш столик под номером {table.Id}\n");
             });
         }
 
@@ -94,16 +97,16 @@ namespace MessageDrivenArchitecture.Models
                 throw new ArgumentException(
                     $"Номер стола должен быть не менее 1, получено: {tableId}");
             }
-            Console.WriteLine("Добрый день! Сейчас снимем бронь.");
-
+            Notificator.SendMessage("Добрый день! Сейчас снимем бронь.");
+            Table table = null;
             lock (_lockTables)
             {
-                var table = _tables.FirstOrDefault(t => t.Id == tableId);
+                table = _tables.FirstOrDefault(t => t.Id == tableId);
                 table?.SetState(State.Free);
-                Console.WriteLine(table is null
-                    ? $"У нас нет стола с номером {tableId}"
-                    : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!");
             }
+            Notificator.SendMessage(table is null
+                ? $"У нас нет стола с номером {tableId}"
+                : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!\n");
         }
 
         /// <summary>
@@ -118,18 +121,19 @@ namespace MessageDrivenArchitecture.Models
                 throw new ArgumentException(
                     $"Номер стола должен быть не менее 1, получено: {tableId}");
             }
-            Console.WriteLine("Добрый день! Сейчас снимем бронь.");
+            Notificator.SendMessage("Добрый день! Сейчас снимем бронь.");
             Task.Run(async () =>
             {
+                Table table = null;
                 lock (_lockTables)
                 {
-                    var table = _tables.FirstOrDefault(t => t.Id == tableId);
+                    table = _tables.FirstOrDefault(t => t.Id == tableId);
                     table?.SetState(State.Free);
-                    Console.WriteLine(table is null
-                         ? $"У нас нет стола с номером {tableId}"
-                         : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!");
                 }
                 await Task.Delay(3000);
+                Notificator.SendMessage(table is null
+                     ? $"У нас нет стола с номером {tableId}"
+                     : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!\n");
             });
         }
     }

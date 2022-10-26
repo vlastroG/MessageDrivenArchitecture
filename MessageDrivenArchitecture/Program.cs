@@ -1,4 +1,5 @@
 ﻿using MessageDrivenArchitecture.Models;
+using MessageDrivenArchitecture.Services;
 using System.Diagnostics;
 
 namespace MessageDrivenArchitecture
@@ -16,24 +17,15 @@ namespace MessageDrivenArchitecture
             Restaurant restaurant = new(50);
             while (true)
             {
-                Console.WriteLine("asyncbook - асинхронно забронировать столик" +
-                    "\nsyncbook - синхронно забронировать столик" +
-                    "\nasyncunbook - асинхронно снять бронь" +
-                    "\nsyncunbook - синхронно снять бронь\n");
+                Notificator.SayHello();
 
                 var choice = Console.ReadLine().ToLower();
                 Console.WriteLine();
                 if (!_choices.Contains(choice))
                 {
-                    Console.WriteLine("Введите asyncbook, syncbook, asyncunbook, syncunbook (регистр не важен)\n");
+                    Notificator.CommandError();
                     continue;
                 }
-                //Console.WriteLine("Введите количество мест:");
-                //if (!int.TryParse(Console.ReadLine(), out var seatsCount) && (seatsCount < 1 || seatsCount > 12))
-                //{
-                //    Console.WriteLine("Введите число от 1 до 12:");
-                //    continue;
-                //}
                 var seatsCount = 1;
 
 
@@ -63,7 +55,7 @@ namespace MessageDrivenArchitecture
                     default:
                         continue;
                 }
-                Console.WriteLine("Спасибо за звонок!");
+                Notificator.SayGoodbye();
                 var ts = stopWatch.Elapsed;
                 Console.WriteLine($"{ts.Seconds:00}:{ts.Milliseconds:00}\n");
             }
