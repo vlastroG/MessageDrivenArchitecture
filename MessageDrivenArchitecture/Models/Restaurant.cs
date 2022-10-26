@@ -1,9 +1,11 @@
 ﻿using MessageDrivenArchitecture.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace MessageDrivenArchitecture.Models
 {
@@ -34,6 +36,30 @@ namespace MessageDrivenArchitecture.Models
             {
                 _tables.Add(new Table(i));
             }
+            UnbookAll();
+        }
+
+        private void UnbookAll()
+        {
+            System.Timers.Timer timer = new System.Timers.Timer(20000);
+            timer.AutoReset = true;
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(OnTimedEvent);
+            timer.Start();
+        }
+
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                lock (_lockTables)
+                {
+                    foreach (var table in _tables)
+                    {
+                        table.SetState(State.Free);
+                    }
+                }
+                Notificator.SendMessage("Время бронирования столов истекло. Все столы свободны!");
+            });
         }
 
 
