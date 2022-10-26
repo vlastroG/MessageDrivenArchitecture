@@ -29,6 +29,10 @@ namespace MessageDrivenArchitecture.Models
         public Table(int id, int seatsCount)
         {
             Id = id;
+            if (id < 1)
+            {
+                throw new ArgumentException($"Id должно быть не менее 1, получено: {id}");
+            }
             if (seatsCount < 1 || seatsCount > 12)
                 throw new ArgumentException($"У стола может быть от 1 до 12 мест, получено: {seatsCount}");
             SeatsCount = seatsCount;

@@ -81,5 +81,56 @@ namespace MessageDrivenArchitecture.Models
                 await Task.Delay(3000);
             });
         }
+
+        /// <summary>
+        /// Синхронное снятие брони по номеру стола
+        /// </summary>
+        /// <param name="tableId">Номер стола</param>
+        /// <exception cref="ArgumentException">Исключение, если номер стола < 1</exception>
+        public void UnBookTable(int tableId)
+        {
+            if (tableId < 1)
+            {
+                throw new ArgumentException(
+                    $"Номер стола должен быть не менее 1, получено: {tableId}");
+            }
+            Console.WriteLine("Добрый день! Сейчас снимем бронь.");
+
+            lock (_lockTables)
+            {
+                var table = _tables.FirstOrDefault(t => t.Id == tableId);
+                table?.SetState(State.Free);
+                Console.WriteLine(table is null
+                    ? $"У нас нет стола с номером {tableId}"
+                    : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!");
+            }
+        }
+
+        /// <summary>
+        /// Асинхронное снятие брони стола по его номеру
+        /// </summary>
+        /// <param name="tableId">Номер стола</param>
+        /// <exception cref="ArgumentException">Исключение, если номер стола < 1</exception>
+        public void UnBookTableAsync(int tableId)
+        {
+            if (tableId < 1)
+            {
+                throw new ArgumentException(
+                    $"Номер стола должен быть не менее 1, получено: {tableId}");
+            }
+            Console.WriteLine("Добрый день! Сейчас снимем бронь.");
+            Task.Run(async () =>
+            {
+                lock (_lockTables)
+                {
+                    var table = _tables.FirstOrDefault(t => t.Id == tableId);
+                    table?.SetState(State.Free);
+                    Console.WriteLine(table is null
+                         ? $"У нас нет стола с номером {tableId}"
+                         : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!");
+                }
+                await Task.Delay(3000);
+            });
+        }
     }
 }
