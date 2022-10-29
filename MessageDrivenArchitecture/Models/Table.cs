@@ -14,6 +14,8 @@ namespace MessageDrivenArchitecture.Models
 
         public int Id { get; }
 
+        private readonly object _lock = new object();
+
         /// <summary>
         /// Конструктор стола по id
         /// </summary>
@@ -46,9 +48,12 @@ namespace MessageDrivenArchitecture.Models
         /// <returns>True, если состояние изменено, иначе false</returns>
         public bool SetState(State state)
         {
-            if (state == State) return false;
-            State = state;
-            return true;
+            lock (_lock)
+            {
+                if (state == State) return false;
+                State = state;
+                return true;
+            }
         }
     }
 }
