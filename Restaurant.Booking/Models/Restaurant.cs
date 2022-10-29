@@ -72,7 +72,7 @@ namespace Restaurant.Booking.Models
             });
         }
 
-        public void BookTableAsync(int countOfPersons)
+        public async Task<bool?> BookTableAsync(int countOfPersons)
         {
             if (countOfPersons < 1 || countOfPersons > 12)
             {
@@ -80,19 +80,14 @@ namespace Restaurant.Booking.Models
                     $"Количество персон должно быть не менее 1 и не более 12. Получено: {countOfPersons}");
             }
             Console.WriteLine("Добрый день! Сейчас подберем Вам столик!");
-            Task.Run(async () =>
+
+            Table table = null;
+            await Task.Delay(3000);
+            lock (_lockTables)
             {
-                Table table = null;
-                await Task.Delay(3000);
-                lock (_lockTables)
-                {
-                    table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
-                    table?.SetState(State.Booked);
-                    _producer.Send(table is null
-                        ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
-                        : $"Готово! Ваш столик под номером {table.Id}\n");
-                }
-            });
+                table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
+                return table?.SetState(State.Booked);
+            }
         }
 
 
@@ -101,7 +96,7 @@ namespace Restaurant.Booking.Models
         /// </summary>
         /// <param name="tableId">Номер стола</param>
         /// <exception cref="ArgumentException">Исключение, если номер стола < 1</exception>
-        public void UnBookTableAsync(int tableId)
+        public async Task<bool?> UnBookTableAsync(int tableId)
         {
             if (tableId < 1)
             {
@@ -109,19 +104,13 @@ namespace Restaurant.Booking.Models
                     $"Номер стола должен быть не менее 1, получено: {tableId}");
             }
             Console.WriteLine("Добрый день! Сейчас снимем бронь.");
-            Task.Run(async () =>
+            Table table = null;
+            await Task.Delay(3000);
+            lock (_lockTables)
             {
-                Table table = null;
-                await Task.Delay(3000);
-                lock (_lockTables)
-                {
-                    table = _tables.FirstOrDefault(t => t.Id == tableId);
-                    table?.SetState(State.Free);
-                    _producer.Send(table is null
-                         ? $"У нас нет стола с номером {tableId}"
-                         : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!\n");
-                }
-            });
+                table = _tables.FirstOrDefault(t => t.Id == tableId);
+                return table?.SetState(State.Free);
+            }
         }
     }
 }
