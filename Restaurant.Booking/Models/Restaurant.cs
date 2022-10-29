@@ -51,7 +51,7 @@ namespace Restaurant.Booking.Models
 
         private void UnbookAll()
         {
-            System.Timers.Timer timer = new System.Timers.Timer(20000);
+            System.Timers.Timer timer = new System.Timers.Timer(60000);
             timer.AutoReset = true;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(OnTimedEvent);
             timer.Start();
@@ -83,15 +83,15 @@ namespace Restaurant.Booking.Models
             Task.Run(async () =>
             {
                 Table table = null;
+                await Task.Delay(3000);
                 lock (_lockTables)
                 {
                     table = _tables.FirstOrDefault(t => t.SeatsCount >= countOfPersons && t.State == State.Free);
                     table?.SetState(State.Booked);
+                    _producer.Send(table is null
+                        ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
+                        : $"Готово! Ваш столик под номером {table.Id}\n");
                 }
-                await Task.Delay(3000);
-                _producer.Send(table is null
-                    ? "К сожалению мы не можем Вам предложить подходящий столик...Обратитесь позднее!"
-                    : $"Готово! Ваш столик под номером {table.Id}\n");
             });
         }
 
@@ -112,15 +112,15 @@ namespace Restaurant.Booking.Models
             Task.Run(async () =>
             {
                 Table table = null;
+                await Task.Delay(3000);
                 lock (_lockTables)
                 {
                     table = _tables.FirstOrDefault(t => t.Id == tableId);
                     table?.SetState(State.Free);
+                    _producer.Send(table is null
+                         ? $"У нас нет стола с номером {tableId}"
+                         : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!\n");
                 }
-                await Task.Delay(3000);
-                _producer.Send(table is null
-                     ? $"У нас нет стола с номером {tableId}"
-                     : $"Готово! Cтолик под номером {table.Id} теперь точно свободен!\n");
             });
         }
     }
