@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessageDrivenArchitecture.Models
+namespace Restaurant.Booking.Models
 {
     public class Table
     {
