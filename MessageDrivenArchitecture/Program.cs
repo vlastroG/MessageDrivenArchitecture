@@ -1,51 +1,63 @@
 ﻿using MessageDrivenArchitecture.Models;
+using MessageDrivenArchitecture.Services;
 using System.Diagnostics;
 
 namespace MessageDrivenArchitecture
 {
     internal class Program
     {
-        private static readonly string[] _choices = new string[] { "a", "s" };
+        private static readonly string[] _choices = new string[] {
+            "asyncbook",
+            "syncbook",
+            "asyncunbook",
+            "syncunbook" };
 
         static void Main(string[] args)
         {
             Restaurant restaurant = new(50);
             while (true)
             {
-                Console.WriteLine("Здравствуйте! На какое количество персон хабронировать столик для Вас?" +
-                    "\nA - асинхронно" +
-                    "\nS - синхронно");
+                Notificator.SayHello();
 
                 var choice = Console.ReadLine().ToLower();
-                if (_choices.Contains(choice))
+                Console.WriteLine();
+                if (!_choices.Contains(choice))
                 {
-                    Console.WriteLine("Введите A или S (регистр не важен)");
+                    Notificator.CommandError();
                     continue;
                 }
-                //Console.WriteLine("Введите количество мест:");
-                //if (!int.TryParse(Console.ReadLine(), out var seatsCount) && (seatsCount < 1 || seatsCount > 12))
-                //{
-                //    Console.WriteLine("Введите число от 1 до 12:");
-                //    continue;
-                //}
                 var seatsCount = 1;
 
+
                 var stopWatch = new Stopwatch();
-                if (choice == "a")
+                switch (choice)
                 {
-                    stopWatch.Start();
-                    restaurant.BookTableAsync(seatsCount);
-                    stopWatch.Stop();
+                    case "syncbook":
+                        stopWatch.Start();
+                        restaurant.BookTable(seatsCount);
+                        stopWatch.Stop();
+                        break;
+                    case "asyncbook":
+                        stopWatch.Start();
+                        restaurant.BookTableAsync(seatsCount);
+                        stopWatch.Stop();
+                        break;
+                    case "asyncunbook":
+                        stopWatch.Start();
+                        restaurant.UnBookTableAsync(Random.Shared.Next(1, 51));
+                        stopWatch.Stop();
+                        break;
+                    case "syncunbook":
+                        stopWatch.Start();
+                        restaurant.UnBookTableAsync(Random.Shared.Next(1, 51));
+                        stopWatch.Stop();
+                        break;
+                    default:
+                        continue;
                 }
-                else
-                {
-                    stopWatch.Start();
-                    restaurant.BookTable(seatsCount);
-                    stopWatch.Stop();
-                }
-                Console.WriteLine("Спасибо за звонок!");
+                Notificator.SayGoodbye();
                 var ts = stopWatch.Elapsed;
-                Console.WriteLine($"{ts.Seconds:00}:{ts.Milliseconds:00}");
+                Console.WriteLine($"{ts.Seconds:00}:{ts.Milliseconds:00}\n");
             }
         }
     }
