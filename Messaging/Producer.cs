@@ -15,7 +15,7 @@ namespace Messaging
         public Producer(string queueName, string hostName)
         {
             _queueName = queueName;
-            _hostName = "shark.rmq.cloudamqp.com";
+            _hostName = "kangaroo.rmq.cloudamqp.com";
         }
 
         public void Send(string message)

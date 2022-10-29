@@ -19,7 +19,7 @@ namespace Messaging
         public Consumer(string queueName, string hostName)
         {
             _queueName = queueName;
-            _hostName = "shark.rmq.cloudamqp.com";
+            _hostName = "kangaroo.rmq.cloudamqp.com";
             var factory = new ConnectionFactory()
             {
                 HostName = _hostName,
