@@ -1,27 +1,30 @@
-﻿using System;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Restaurant.Booking.Services.Background;
+using Restaurant.Kitchen.Consumers;
+using Restaurant.Kitchen.Models;
 
-namespace Restaurant.Booking
+namespace Restaurant.Kitchen
 {
-    internal static class Program
+    public class Program
     {
         public static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
             CreateHostBuilder(args).Build().Run();
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddMassTransit(x =>
                     {
+                        x.AddConsumer<KitchenTableBookedConsumer>();
+
                         x.UsingRabbitMq((context, cfg) =>
                         {
                             cfg.Host("kangaroo.rmq.cloudamqp.com", 5672, "ueiosuvi", h =>
@@ -33,11 +36,10 @@ namespace Restaurant.Booking
                             cfg.ConfigureEndpoints(context);
                         });
                     });
+
+                    services.AddSingleton<Manager>();
+
                     services.AddMassTransitHostedService(true);
-
-                    services.AddTransient<Restaurant.Booking.Models.Restaurant>();
-
-                    services.AddHostedService<Worker>();
                 });
     }
 }
