@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Restaurant.Booking.Consumers;
 using Restaurant.Booking.Services.Background;
 
 namespace Restaurant.Booking
@@ -22,6 +23,24 @@ namespace Restaurant.Booking
                 {
                     services.AddMassTransit(x =>
                     {
+                        x.AddConsumer<RestaurantBookingRequestConsumer>()
+                            .Endpoint(e =>
+                            {
+                                e.Temporary = true;
+                            });
+
+                        x.AddConsumer<BookingRequestFaultConsumer>()
+                            .Endpoint(e =>
+                            {
+                                e.Temporary = true;
+                            });
+
+                        x.AddSagaStateMachine<RestaurantBookingSaga, RestaurantBooking>()
+                            .Endpoint(e => e.Temporary = true)
+                            .InMemoryRepository();
+
+                        x.AddDelayedMessageScheduler();
+
                         x.UsingRabbitMq((context, cfg) =>
                         {
                             cfg.Host("kangaroo.rmq.cloudamqp.com", 5672, "ueiosuvi", h =>
@@ -30,12 +49,16 @@ namespace Restaurant.Booking
                                 h.Password("KdYyQ2jvIP7hVpOP1IZLEyQkrRPI8MW8");
                             });
 
+                            cfg.UseDelayedMessageScheduler();
+                            cfg.UseInMemoryOutbox();
                             cfg.ConfigureEndpoints(context);
                         });
                     });
                     services.AddMassTransitHostedService(true);
 
-                    services.AddTransient<Restaurant.Booking.Models.Restaurant>();
+                    services.AddTransient<RestaurantBooking>();
+                    services.AddTransient<RestaurantBookingSaga>();
+                    services.AddTransient<Models.Restaurant>();
 
                     services.AddHostedService<Worker>();
                 });
