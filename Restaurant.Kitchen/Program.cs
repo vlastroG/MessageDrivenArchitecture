@@ -27,6 +27,12 @@ namespace Restaurant.Kitchen
 
                         x.UsingRabbitMq((context, cfg) =>
                         {
+                            cfg.Host("kangaroo.rmq.cloudamqp.com", 5672, "ueiosuvi", h =>
+                            {
+                                h.Username("ueiosuvi");
+                                h.Password("KdYyQ2jvIP7hVpOP1IZLEyQkrRPI8MW8");
+                            });
+
                             cfg.ConfigureEndpoints(context);
                         });
                     });
