@@ -23,7 +23,19 @@ namespace Restaurant.Kitchen
                 {
                     services.AddMassTransit(x =>
                     {
-                        x.AddConsumer<KitchenTableBookedConsumer>();
+                        x.AddConsumer<KitchenTableBookedConsumer>()
+                        .Endpoint(e =>
+                        {
+                            e.Temporary = true;
+                        });
+
+                        x.AddConsumer<KitchenBookingRequestFaultConsumer>()
+                        .Endpoint(e =>
+                        {
+                            e.Temporary = true;
+                        });
+
+                        x.AddDelayedMessageScheduler();
 
                         x.UsingRabbitMq((context, cfg) =>
                         {
@@ -33,6 +45,8 @@ namespace Restaurant.Kitchen
                                 h.Password("KdYyQ2jvIP7hVpOP1IZLEyQkrRPI8MW8");
                             });
 
+                            cfg.UseDelayedMessageScheduler();
+                            cfg.UseInMemoryOutbox();
                             cfg.ConfigureEndpoints(context);
                         });
                     });

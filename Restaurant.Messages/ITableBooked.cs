@@ -14,11 +14,6 @@ namespace Restaurant.Messages
         public Guid OrderId { get; }
 
         /// <summary>
-        /// Идентификационный номер клиента
-        /// </summary>
-        public Guid ClientId { get; }
-
-        /// <summary>
         /// Предзаказанное блюдо
         /// </summary>
         public Dish? PreOrder { get; }
@@ -27,5 +22,10 @@ namespace Restaurant.Messages
         /// Статус брони стола
         /// </summary>
         public bool Success { get; }
+
+        /// <summary>
+        /// Время воздания брони
+        /// </summary>
+        public DateTime CreationDate { get; }
     }
 }
