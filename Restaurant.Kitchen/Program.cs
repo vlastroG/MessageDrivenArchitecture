@@ -40,17 +40,9 @@ namespace Restaurant.Kitchen
                                             TimeSpan.FromSeconds(2));
                                     }
                                 );
-                            })
-                            .Endpoint(e =>
-                            {
-                                e.Temporary = true;
                             });
 
-                        x.AddConsumer<KitchenBookingRequestFaultConsumer>()
-                        .Endpoint(e =>
-                        {
-                            e.Temporary = true;
-                        });
+                        x.AddConsumer<KitchenBookingRequestFaultConsumer>();
 
                         x.AddDelayedMessageScheduler();
 
