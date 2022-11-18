@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using GreenPipes;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,7 +24,22 @@ namespace Restaurant.Booking
                 {
                     services.AddMassTransit(x =>
                     {
-                        x.AddConsumer<RestaurantBookingRequestConsumer>()
+                        x.AddConsumer<RestaurantBookingRequestConsumer>(
+                            configurator =>
+                            {
+                                configurator.UseScheduledRedelivery(r =>
+                                {
+                                    r.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(20),
+                                        TimeSpan.FromSeconds(30));
+                                });
+                                configurator.UseMessageRetry(
+                                    r =>
+                                    {
+                                        r.Incremental(3, TimeSpan.FromSeconds(1),
+                                            TimeSpan.FromSeconds(2));
+                                    }
+                                );
+                            })
                             .Endpoint(e =>
                             {
                                 e.Temporary = true;
