@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Restaurant.Booking.Consumers;
 using Restaurant.Booking.Services.Background;
+using Restaurant.Messages.MemoryDb;
 
 namespace Restaurant.Booking
 {
@@ -39,20 +40,11 @@ namespace Restaurant.Booking
                                             TimeSpan.FromSeconds(2));
                                     }
                                 );
-                            })
-                            .Endpoint(e =>
-                            {
-                                e.Temporary = true;
                             });
 
-                        x.AddConsumer<BookingRequestFaultConsumer>()
-                            .Endpoint(e =>
-                            {
-                                e.Temporary = true;
-                            });
+                        x.AddConsumer<BookingRequestFaultConsumer>();
 
                         x.AddSagaStateMachine<RestaurantBookingSaga, RestaurantBooking>()
-                            .Endpoint(e => e.Temporary = true)
                             .InMemoryRepository();
 
                         x.AddDelayedMessageScheduler();
@@ -65,16 +57,17 @@ namespace Restaurant.Booking
                                 h.Password("KdYyQ2jvIP7hVpOP1IZLEyQkrRPI8MW8");
                             });
 
+                            cfg.Durable = false;
                             cfg.UseDelayedMessageScheduler();
                             cfg.UseInMemoryOutbox();
                             cfg.ConfigureEndpoints(context);
                         });
                     });
-                    services.AddMassTransitHostedService(true);
 
                     services.AddTransient<RestaurantBooking>();
                     services.AddTransient<RestaurantBookingSaga>();
                     services.AddTransient<Models.Restaurant>();
+                    services.AddSingleton<IMemoryRepository<BookingRequestModel>, MemoryRepository<BookingRequestModel>>();
 
                     services.AddHostedService<Worker>();
                 });
