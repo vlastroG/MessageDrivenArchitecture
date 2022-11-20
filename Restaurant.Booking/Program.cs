@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using GreenPipes;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using MassTransit;
+using MassTransit.Audit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
 using Restaurant.Booking.Consumers;
 using Restaurant.Booking.Services.Background;
+using Restaurant.Messages;
 using Restaurant.Messages.MemoryDb;
 
 namespace Restaurant.Booking
@@ -25,24 +29,12 @@ namespace Restaurant.Booking
                 {
                     services.AddMassTransit(x =>
                     {
-                        x.AddConsumer<RestaurantBookingRequestConsumer>(
-                            configurator =>
-                            {
-                                configurator.UseScheduledRedelivery(r =>
-                                {
-                                    r.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(20),
-                                        TimeSpan.FromSeconds(30));
-                                });
-                                configurator.UseMessageRetry(
-                                    r =>
-                                    {
-                                        r.Incremental(3, TimeSpan.FromSeconds(1),
-                                            TimeSpan.FromSeconds(2));
-                                    }
-                                );
-                            });
+                        services.AddSingleton<IMessageAuditStore, AuditStore>();
 
-                        x.AddConsumer<BookingRequestFaultConsumer>();
+                        var serviceProvider = services.BuildServiceProvider();
+                        var auditStore = serviceProvider.GetService<IMessageAuditStore>();
+
+                        x.AddConsumer<RestaurantBookingRequestConsumer>();
 
                         x.AddSagaStateMachine<RestaurantBookingSaga, RestaurantBooking>()
                             .InMemoryRepository();
@@ -56,18 +48,28 @@ namespace Restaurant.Booking
                                 h.Username("ueiosuvi");
                                 h.Password("KdYyQ2jvIP7hVpOP1IZLEyQkrRPI8MW8");
                             });
-
+                            cfg.UsePrometheusMetrics(serviceName: "booking_service");
                             cfg.Durable = false;
                             cfg.UseDelayedMessageScheduler();
                             cfg.UseInMemoryOutbox();
                             cfg.ConfigureEndpoints(context);
+
+                            cfg.ConnectSendAuditObservers(auditStore);
+                            cfg.ConnectConsumeAuditObserver(auditStore);
                         });
+                    });
+
+                    services.Configure<MassTransitHostOptions>(options =>
+                    {
+                        options.WaitUntilStarted = true;
+                        options.StartTimeout = TimeSpan.FromSeconds(30);
+                        options.StopTimeout = TimeSpan.FromMinutes(1);
                     });
 
                     services.AddTransient<RestaurantBooking>();
                     services.AddTransient<RestaurantBookingSaga>();
                     services.AddTransient<Models.Restaurant>();
-                    services.AddSingleton<IMemoryRepository<BookingRequestModel>, MemoryRepository<BookingRequestModel>>();
+                    services.AddSingleton<IMemoryRepository<IBookingRequest>, MemoryRepository<IBookingRequest>>();
 
                     services.AddHostedService<Worker>();
                 });
