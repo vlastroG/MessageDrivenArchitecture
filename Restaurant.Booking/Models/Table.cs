@@ -6,14 +6,29 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Booking.Models
 {
+    /// <summary>
+    /// Стол в ресторане
+    /// </summary>
     public class Table
     {
+        /// <summary>
+        /// Состояние стола
+        /// </summary>
         public State State { get; private set; }
 
+        /// <summary>
+        /// Количество мест за столом
+        /// </summary>
         public int SeatsCount { get; }
 
+        /// <summary>
+        /// Номер стола
+        /// </summary>
         public int Id { get; }
 
+        /// <summary>
+        /// lock object для блокировки во время смены состояния стола
+        /// </summary>
         private readonly object _lock = new object();
 
         /// <summary>

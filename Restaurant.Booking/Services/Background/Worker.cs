@@ -17,6 +17,12 @@ namespace Restaurant.Booking.Services.Background
             _bus = bus;
         }
 
+        /// <summary>
+        /// Предложение клиенту заказать стол в ресторане (1 раз в 10 сек)
+        /// и последующий заказ стола с генерацией Guid
+        /// </summary>
+        /// <param name="stoppingToken"></param>
+        /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;

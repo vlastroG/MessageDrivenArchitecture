@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Booking.Consumers
 {
+    /// <summary>
+    /// Отмена заказа
+    /// </summary>
     public class BookingExpire : IBookingExpire
     {
         private readonly RestaurantBooking _instance;

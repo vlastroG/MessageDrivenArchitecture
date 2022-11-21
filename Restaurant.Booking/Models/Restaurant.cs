@@ -9,6 +9,9 @@ using System.Timers;
 
 namespace Restaurant.Booking.Models
 {
+    /// <summary>
+    /// Ресторан
+    /// </summary>
     public class Restaurant
     {
         /// <summary>
@@ -49,6 +52,9 @@ namespace Restaurant.Booking.Models
             UnbookAll();
         }
 
+        /// <summary>
+        /// Снимает бронь со всех столов раз в 60 секунд
+        /// </summary>
         private void UnbookAll()
         {
             System.Timers.Timer timer = new System.Timers.Timer(60000);
@@ -57,6 +63,11 @@ namespace Restaurant.Booking.Models
             timer.Start();
         }
 
+        /// <summary>
+        /// Снятие брони со всех столов по истечении таймера
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         private async void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             await Task.Run(() =>
@@ -72,6 +83,12 @@ namespace Restaurant.Booking.Models
             });
         }
 
+        /// <summary>
+        /// Забронировать стол в ресторане с заданным количеством мест
+        /// </summary>
+        /// <param name="countOfPersons">Количество мест за столом</param>
+        /// <returns>Забронирован стол, или нет</returns>
+        /// <exception cref="ArgumentException">Число персон от 1 до 12, иначе исключение</exception>
         public async Task<bool?> BookTableAsync(int countOfPersons)
         {
             if (countOfPersons < 1 || countOfPersons > 12)

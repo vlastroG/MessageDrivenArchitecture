@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Booking
 {
+    /// <summary>
+    /// Модель поведения для бронирования стола в ресторане (сага для MassTransit)
+    /// </summary>
     public class RestaurantBooking : SagaStateMachineInstance
     {
         /// <summary>
