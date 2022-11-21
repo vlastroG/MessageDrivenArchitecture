@@ -9,6 +9,9 @@ namespace Restaurant.Messages.MemoryDb
 {
     public class MemoryRepository<T> : IMemoryRepository<T> where T : class
     {
+        /// <summary>
+        /// Потокобезопкасная коллекция для хранения сущностей репозитория
+        /// </summary>
         private readonly ConcurrentBag<T> _repo = new();
 
         public void AddOrUpdate(T entity)

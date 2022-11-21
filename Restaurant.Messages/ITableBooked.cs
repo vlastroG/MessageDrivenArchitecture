@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Messages
 {
+    /// <summary>
+    /// Модель брони стола
+    /// </summary>
     public interface ITableBooked
     {
         /// <summary>

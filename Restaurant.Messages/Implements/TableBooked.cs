@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Messages.Implements
 {
+    /// <summary>
+    /// Сообщение брони стола
+    /// </summary>
     public class TableBooked : ITableBooked
     {
         /// <summary>
@@ -22,13 +25,24 @@ namespace Restaurant.Messages.Implements
             PreOrder = preOrder;
         }
 
+        /// <summary>
+        /// Id заказа
+        /// </summary>
         public Guid OrderId { get; }
 
-
+        /// <summary>
+        /// Предзаказанное блюдо
+        /// </summary>
         public Dish? PreOrder { get; }
 
+        /// <summary>
+        /// Статус брони
+        /// </summary>
         public bool Success { get; }
 
+        /// <summary>
+        /// Время создания заказа
+        /// </summary>
         public DateTime CreationDate { get; }
     }
 }

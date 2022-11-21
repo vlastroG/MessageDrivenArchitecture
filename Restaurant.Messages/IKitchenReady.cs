@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Messages
 {
+    /// <summary>
+    /// Модель поведения кухни для заказа
+    /// </summary>
     public interface IKitchenReady
     {
         /// <summary>
