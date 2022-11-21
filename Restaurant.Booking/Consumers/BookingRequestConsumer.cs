@@ -7,45 +7,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Restaurant.Messages.MemoryDb;
+using Microsoft.Extensions.Logging;
 
 namespace Restaurant.Booking.Consumers
 {
     public class RestaurantBookingRequestConsumer : IConsumer<IBookingRequest>
     {
+        private readonly ILogger _logger;
+
         private readonly Restaurant.Booking.Models.Restaurant _restaurant;
 
-        private readonly IMemoryRepository<BookingRequestModel> _memoryRepository;
+        private readonly IMemoryRepository<IBookingRequest> _memoryRepository;
 
         public RestaurantBookingRequestConsumer(
             Restaurant.Booking.Models.Restaurant restaurant,
-            IMemoryRepository<BookingRequestModel> memoryRepository)
+            IMemoryRepository<IBookingRequest> memoryRepository,
+            ILogger<RestaurantBookingRequestConsumer> logger)
         {
             _restaurant = restaurant;
             _memoryRepository = memoryRepository;
+            _logger = logger;
         }
 
         public async Task Consume(ConsumeContext<IBookingRequest> context)
         {
+            _logger.Log(LogLevel.Information, $"[OrderId: {context.Message.OrderId}]");
             var model = _memoryRepository.Get().FirstOrDefault(i => i.OrderId == context.Message.OrderId);
 
-            if (model is not null && model.CheckMessageId(context.MessageId.ToString()))
+            if (model is null)
             {
-                Console.WriteLine(context.MessageId.ToString());
-                Console.WriteLine("Second time");
+                _logger.Log(LogLevel.Debug, "First time message");
+                _memoryRepository.AddOrUpdate(context.Message);
+                var result = await _restaurant.BookTableAsync(1);
+                await context.Publish<ITableBooked>(new TableBooked(context.Message.OrderId, result ?? false, Dish.Pizza));
                 return;
             }
-
-            var requestModel = new BookingRequestModel(context.Message.OrderId, context.Message.ClientId,
-                context.Message.PreOrder, context.Message.CreationDate, context.MessageId.ToString());
-
-            Console.WriteLine(context.MessageId.ToString());
-            Console.WriteLine("First time");
-            var resultModel = model?.Update(requestModel, context.MessageId.ToString()) ?? requestModel;
-            _memoryRepository.AddOrUpdate(resultModel);
-
-            var result = await _restaurant.BookTableAsync(1);
-
-            await context.Publish<ITableBooked>(new TableBooked(context.Message.OrderId, result ?? false, Dish.Pizza));
+            _logger.Log(LogLevel.Debug, "Second time message");
         }
     }
 }

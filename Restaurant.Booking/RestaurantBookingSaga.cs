@@ -33,9 +33,6 @@ namespace Restaurant.Booking
             CompositeEvent(() => BookingApproved,
                 x => x.ReadyEventStatus, KitchenReady, TableBooked);
 
-            Event(() => BookingRequestFault,
-                x =>
-                    x.CorrelateById(m => m.Message.Message.OrderId));
 
             Schedule(() => BookingExpired,
                 x => x.ExpirationId, x =>
@@ -68,17 +65,9 @@ namespace Restaurant.Booking
                             $"Стол успешно забронирован"))
                     .Finalize(),
 
-                When(BookingRequestFault)
-                    .Then(context => Console.WriteLine($"Ошибочка вышла!"))
-                    .Publish(context => (INotify)new Notify(context.Instance.OrderId,
-                        context.Instance.ClientId,
-                        $"Приносим извинения, стол забронировать не получилось."))
-                    .Publish(context => (IBookingCancellation)
-                        new BookingCancellation(context.Data.Message.OrderId))
-                    .Finalize(),
-
                 When(BookingExpired.Received)
                     .Then(context => Console.WriteLine($"Отмена заказа {context.Instance.OrderId}"))
+                    .Publish(context => (INotify)new Notify(context.Instance.OrderId, context.Instance.OrderId, "Expired"))
                     .Finalize()
             );
 
@@ -89,7 +78,6 @@ namespace Restaurant.Booking
         public Event<ITableBooked> TableBooked { get; private set; }
         public Event<IKitchenReady> KitchenReady { get; private set; }
 
-        public Event<Fault<IBookingRequest>> BookingRequestFault { get; private set; }
 
         public Schedule<RestaurantBooking, IBookingExpire> BookingExpired { get; private set; }
         public Event BookingApproved { get; private set; }
