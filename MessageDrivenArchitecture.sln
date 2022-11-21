@@ -3,15 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageDrivenArchitecture", "MessageDrivenArchitecture\MessageDrivenArchitecture.csproj", "{1A135864-5420-4569-8C54-6A69E10D7519}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging", "Messaging\Messaging.csproj", "{5372BD9E-C429-48C3-A45C-F7839BD06E6A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Restaurant.Booking", "Restaurant.Booking\Restaurant.Booking.csproj", "{CDB9AA78-20C4-4E63-AB88-0281822F94C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Restaurant.Notification", "Restaurant.Notification\Restaurant.Notification.csproj", "{A9563368-8F61-45B2-925A-B5C9D38C2A23}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestConsole", "TestConsole", "{C9F57FAC-104C-41DE-B039-31BD77C089E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Restaurant.Messages", "Restaurant.Messages\Restaurant.Messages.csproj", "{ECFAD08C-91DF-4386-92EE-CCE7F3D58764}"
 EndProject
@@ -25,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1A135864-5420-4569-8C54-6A69E10D7519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A135864-5420-4569-8C54-6A69E10D7519}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A135864-5420-4569-8C54-6A69E10D7519}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A135864-5420-4569-8C54-6A69E10D7519}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5372BD9E-C429-48C3-A45C-F7839BD06E6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5372BD9E-C429-48C3-A45C-F7839BD06E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5372BD9E-C429-48C3-A45C-F7839BD06E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,9 +48,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1A135864-5420-4569-8C54-6A69E10D7519} = {C9F57FAC-104C-41DE-B039-31BD77C089E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9DB215DD-61C9-4612-8A4D-EDAA980B16C4}
