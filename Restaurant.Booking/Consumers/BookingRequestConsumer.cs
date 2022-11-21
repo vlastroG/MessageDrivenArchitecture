@@ -11,12 +11,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Restaurant.Booking.Consumers
 {
+    /// <summary>
+    /// Потребитель сообщений запросов бронирования
+    /// </summary>
     public class RestaurantBookingRequestConsumer : IConsumer<IBookingRequest>
     {
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Ресторан, в котором происходит бронь
+        /// </summary>
         private readonly Restaurant.Booking.Models.Restaurant _restaurant;
 
+        /// <summary>
+        /// Хранилище сообщений запросов заказов в памяти приложения
+        /// </summary>
         private readonly IMemoryRepository<IBookingRequest> _memoryRepository;
 
         public RestaurantBookingRequestConsumer(
@@ -29,6 +38,11 @@ namespace Restaurant.Booking.Consumers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Обрабатывает запрос бронирования стола
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Consume(ConsumeContext<IBookingRequest> context)
         {
             _logger.Log(LogLevel.Information, $"[OrderId: {context.Message.OrderId}]");

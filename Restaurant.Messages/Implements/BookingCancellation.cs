@@ -8,6 +8,10 @@ namespace Restaurant.Messages.Implements
 {
     public class BookingCancellation : IBookingCancellation
     {
+        /// <summary>
+        /// Конструктор отмены заказа
+        /// </summary>
+        /// <param name="orderId">Id отменяемого заказа</param>
         public BookingCancellation(Guid orderId)
         {
             OrderId = orderId;

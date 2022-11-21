@@ -8,6 +8,13 @@ namespace Restaurant.Messages.Implements
 {
     public class BookingRequest : IBookingRequest
     {
+        /// <summary>
+        /// Конструктор запроса брони
+        /// </summary>
+        /// <param name="orderId">Id заказа</param>
+        /// <param name="clientId">Id клиента</param>
+        /// <param name="preOrder">Предзаказанное блюдо</param>
+        /// <param name="creationDate">Время создания заказа</param>
         public BookingRequest(Guid orderId, Guid clientId, Dish? preOrder, DateTime creationDate)
         {
             OrderId = orderId;

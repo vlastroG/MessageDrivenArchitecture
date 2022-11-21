@@ -15,6 +15,9 @@ using Restaurant.Messages.MemoryDb;
 
 namespace Restaurant.Tests;
 
+/// <summary>
+/// Базовые тесты саги
+/// </summary>
 [TestFixture]
 public class SagaTests
 {
@@ -55,8 +58,13 @@ public class SagaTests
         await _provider.DisposeAsync();
     }
 
+    /// <summary>
+    /// Проверить на работостпособность всю цепочку от запроса создать заказ
+    /// до получения уведомления о статусе заказа
+    /// </summary>
+    /// <returns></returns>
     [Test]
-    public async Task Should_be_easy()
+    public async Task All_job_is_done()
     {
         var orderId = NewId.NextGuid();
         var clientId = NewId.NextGuid();

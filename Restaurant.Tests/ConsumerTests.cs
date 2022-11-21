@@ -44,7 +44,10 @@ public class ConsumerTests
         await _provider.DisposeAsync();
     }
 
-
+    /// <summary>
+    /// Проверить, что заказ на бронь принимается
+    /// </summary>
+    /// <returns></returns>
     [Test]
     public async Task Any_booking_request_consumed()
     {
@@ -60,6 +63,10 @@ public class ConsumerTests
         Assert.That(await _harness.Consumed.Any<IBookingRequest>());
     }
 
+    /// <summary>
+    /// Проверить, что консьюмер броней опубликовал сообщение о заказе
+    /// </summary>
+    /// <returns></returns>
     [Test]
     public async Task Booking_request_consumer_published_table_booked_message()
     {

@@ -5,6 +5,9 @@ using Restaurant.Messages.Implements;
 
 namespace Restaurant.Kitchen.Consumers
 {
+    /// <summary>
+    /// Консьюмер заказа брони стола на кухне
+    /// </summary>
     public class KitchenTableBookedConsumer : IConsumer<IBookingRequest>
     {
         private readonly Manager _manager;
@@ -16,6 +19,11 @@ namespace Restaurant.Kitchen.Consumers
             _bus = bus;
         }
 
+        /// <summary>
+        /// Обработать заказ на кухне
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Consume(ConsumeContext<IBookingRequest> context)
         {
             Console.WriteLine($"[OrderId: {context.Message.OrderId} CreationDate: {context.Message.CreationDate}]");

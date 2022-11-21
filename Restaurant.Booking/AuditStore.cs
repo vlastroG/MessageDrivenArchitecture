@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Booking
 {
+    /// <summary>
+    /// Хранитель сообщений (логов)
+    /// </summary>
     public class AuditStore : IMessageAuditStore
     {
         private readonly ILogger _logger;
@@ -18,6 +21,13 @@ namespace Restaurant.Booking
             _logger = logger;
         }
 
+        /// <summary>
+        /// Сохранить сообщение в лог
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="message"></param>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         public Task StoreMessage<T>(T message, MessageAuditMetadata metadata) where T : class
         {
             _logger.Log(LogLevel.Information,
