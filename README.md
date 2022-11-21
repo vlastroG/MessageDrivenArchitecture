@@ -1,2 +1,2 @@
 # MessageDrivenArchitecture
-Message-driven architecture course from GeekBrains.
+Учебный проект ресторана с архитектурой на основе сообщений.
