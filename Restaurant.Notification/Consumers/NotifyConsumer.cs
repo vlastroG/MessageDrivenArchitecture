@@ -4,6 +4,9 @@ using Restaurant.Notification.Sevices;
 
 namespace Restaurant.Notification.Consumers
 {
+    /// <summary>
+    /// Консьюмер уведомлений
+    /// </summary>
     public class NotifyConsumer : IConsumer<INotify>
     {
         private readonly Notifier _notifier;
@@ -13,6 +16,11 @@ namespace Restaurant.Notification.Consumers
             _notifier = notifier;
         }
 
+        /// <summary>
+        /// Уведомить клиента о его заказе
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Task Consume(ConsumeContext<INotify> context)
         {
             _notifier.Notify(context.Message.OrderId, context.Message.ClientId, context.Message.Message);
